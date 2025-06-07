@@ -77,35 +77,39 @@ class AdminPage:
         return self.page.locator("div.oxd-table-row").count() > 0
 
     def try_add_duplicate_user(self, username):
-        # ✅ Step 1: Navigate to Admin section
-        self.page.click("a[href='/web/index.php/admin/viewAdminModule']")
-        self.page.wait_for_selector("h6:has-text('User Management')", timeout=10000)
+        # Navigate to the System Users page directly
+        self.page.click("a[href='/web/index.php/admin/viewSystemUsers']")
 
-        # ✅ Step 2: Ensure we're on 'System Users' page
+        # Wait for System Users page to load
         self.page.wait_for_selector("h6:has-text('System Users')", timeout=10000)
 
-        # ✅ Step 3: Click Add
-        self.page.click("button:has-text('Add')")
+        # Optional short wait for safety
+        self.page.wait_for_timeout(1000)
+
+        # Click on the 'Add' button
+        self.page.locator("button:has-text('Add')").click()
+
+        # Wait for the Add User form to load
         self.page.wait_for_selector("h6:has-text('Add User')", timeout=10000)
 
-        # ✅ Step 4: Fill in the form
-        self.page.locator("div.oxd-select-wrapper").nth(0).click()
-        self.page.locator("div[role='option']:has-text('Admin')").click()
-
-        self.page.fill("input[placeholder='Type for hints...']", "Paul Collings")
+        # Fill out the form with an existing username (duplicate)
+        self.page.select_option("select[role='combobox']", label="Admin")
+        self.page.wait_for_timeout(500)
+        self.page.fill("input[placeholder='Type for hints...']", "Admin")
         self.page.wait_for_timeout(1000)
         self.page.keyboard.press("ArrowDown")
         self.page.keyboard.press("Enter")
 
+        self.page.select_option("select[formcontrolname='status']", label="Enabled")
         self.page.fill("input[name='username']", username)
-        self.page.fill("input[type='password']", "Admin123!")
-        self.page.fill("input[type='password'] >> nth=1", "Admin123!")
+        self.page.fill("input[name='password']", "Admin@123")
+        self.page.fill("input[name='confirmPassword']", "Admin@123")
 
-        # ✅ Step 5: Save
+        # Click Save
         self.page.click("button:has-text('Save')")
 
-        # ✅ Step 6: Wait for 'Already exists' message
-        self.page.wait_for_selector("span:has-text('Already exists')", timeout=10000)
+        # Wait for possible error message
+        self.page.wait_for_selector("span:has-text('Already exists')", timeout=5000)
 
 
 
