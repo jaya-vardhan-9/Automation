@@ -77,31 +77,35 @@ class AdminPage:
         return self.page.locator("div.oxd-table-row").count() > 0
 
     def try_add_duplicate_user(self, username):
-        # ✅ Confirm we're on the correct page
-        self.page.wait_for_selector("h6:has-text('System Users')", timeout=30000)
+        # ✅ Step 1: Navigate to Admin section
+        self.page.click("a[href='/web/index.php/admin/viewAdminModule']")
+        self.page.wait_for_selector("h6:has-text('User Management')", timeout=10000)
 
-        # ✅ Click "Add"
+        # ✅ Step 2: Ensure we're on 'System Users' page
+        self.page.wait_for_selector("h6:has-text('System Users')", timeout=10000)
+
+        # ✅ Step 3: Click Add
         self.page.click("button:has-text('Add')")
-        self.page.wait_for_selector("h6:has-text('Add User')", timeout=30000)
+        self.page.wait_for_selector("h6:has-text('Add User')", timeout=10000)
 
-        # ✅ Fill the form
+        # ✅ Step 4: Fill in the form
+        self.page.locator("div.oxd-select-wrapper").nth(0).click()
+        self.page.locator("div[role='option']:has-text('Admin')").click()
+
         self.page.fill("input[placeholder='Type for hints...']", "Paul Collings")
         self.page.wait_for_timeout(1000)
         self.page.keyboard.press("ArrowDown")
         self.page.keyboard.press("Enter")
 
-        self.page.locator("div.oxd-select-wrapper").nth(0).click()
-        self.page.locator("div[role='option']:has-text('Admin')").click()
-
         self.page.fill("input[name='username']", username)
         self.page.fill("input[type='password']", "Admin123!")
         self.page.fill("input[type='password'] >> nth=1", "Admin123!")
 
-        # ✅ Submit
+        # ✅ Step 5: Save
         self.page.click("button:has-text('Save')")
 
-        # ✅ Expect duplicate user error
-        self.page.wait_for_selector("span:has-text('Already exists')", timeout=30000)
+        # ✅ Step 6: Wait for 'Already exists' message
+        self.page.wait_for_selector("span:has-text('Already exists')", timeout=10000)
 
 
 
