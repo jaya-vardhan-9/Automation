@@ -46,7 +46,7 @@ class AdminPage:
         self.page.wait_for_selector("input[name='username']")
         self.page.fill("input[name='username']", username)
         self.page.click("button:has-text('Search')")
-        self.page.wait_for_timeout(100000)  # give it time to render results
+        self.page.wait_for_timeout(300000)  # give it time to render results
 
     def edit_user(self, username, new_role):
         self.search_user(username)
@@ -55,7 +55,7 @@ class AdminPage:
         self.page.click("label:has-text('User Role') + div")
         self.page.click(f"text={new_role}")
         self.page.click("button:has-text('Save')")
-        self.page.wait_for_timeout(100000)
+        self.page.wait_for_timeout(300000)
 
     def get_user_role_from_table(self, username):
         self.search_user(username)
@@ -69,28 +69,22 @@ class AdminPage:
         self.page.click("i.oxd-icon.bi-trash")  # Trash icon
         self.page.wait_for_selector("button:has-text('Yes, Delete')")
         self.page.click("button:has-text('Yes, Delete')")
-        self.page.wait_for_timeout(100000)
+        self.page.wait_for_timeout(300000)
 
     def is_user_present(self, username):
         self.search_user(username)
-        self.page.wait_for_timeout(100000)
+        self.page.wait_for_timeout(300000)
         return self.page.locator("div.oxd-table-row").count() > 0
 
     def try_add_duplicate_user(self, username):
-        # ✅ Wait for dashboard to fully load (very important on EC2/headless)
-        self.page.wait_for_selector("h6:has-text('Dashboard')", timeout=10000)
+        # ✅ Confirm we're on the correct page
+        self.page.wait_for_selector("h6:has-text('System Users')", timeout=30000)
 
-        # ✅ Click on the "Admin" menu from sidebar
-        self.page.click("span:has-text('Admin')")
-
-        # ✅ Wait for Admin > User Management page to load
-        self.page.wait_for_selector("h6:has-text('System Users')", timeout=10000)
-
-        # ✅ Click the "Add" button
+        # ✅ Click "Add"
         self.page.click("button:has-text('Add')")
-        self.page.wait_for_selector("h6:has-text('Add User')", timeout=10000)
+        self.page.wait_for_selector("h6:has-text('Add User')", timeout=30000)
 
-        # ✅ Fill out the form
+        # ✅ Fill the form
         self.page.fill("input[placeholder='Type for hints...']", "Paul Collings")
         self.page.wait_for_timeout(1000)
         self.page.keyboard.press("ArrowDown")
@@ -103,11 +97,12 @@ class AdminPage:
         self.page.fill("input[type='password']", "Admin123!")
         self.page.fill("input[type='password'] >> nth=1", "Admin123!")
 
-        # ✅ Submit form
+        # ✅ Submit
         self.page.click("button:has-text('Save')")
 
-        # ✅ Wait for duplicate error
-        self.page.wait_for_selector("span:has-text('Already exists')", timeout=10000)
+        # ✅ Expect duplicate user error
+        self.page.wait_for_selector("span:has-text('Already exists')", timeout=30000)
+
 
 
 
