@@ -77,17 +77,16 @@ class AdminPage:
         return self.page.locator("div.oxd-table-row").count() > 0
 
     def try_add_duplicate_user(self, username):
-    # Step 1: Click Admin tab
-        self.page.click("a[href='/web/index.php/admin/viewAdminModule']")
-        self.page.wait_for_selector("h6:has-text('System Users')", timeout=10000)
-
-        # Step 2: Click Add button
+        # ✅ Wait for Add button instead of 'System Users' title
+        self.page.wait_for_selector("button:has-text('Add')", timeout=10000)
         self.page.click("button:has-text('Add')")
+
+        # ✅ Wait for 'Add User' title to confirm navigation
         self.page.wait_for_selector("h6:has-text('Add User')", timeout=10000)
 
-        # Step 3: Fill form
+        # Fill out the form
         self.page.fill("input[placeholder='Type for hints...']", "Paul Collings")
-        self.page.wait_for_timeout(1000)  # wait for suggestions to appear
+        self.page.wait_for_timeout(1000)
         self.page.keyboard.press("ArrowDown")
         self.page.keyboard.press("Enter")
 
@@ -98,10 +97,9 @@ class AdminPage:
         self.page.fill("input[type='password']", "Admin123!")
         self.page.fill("input[type='password'] >> nth=1", "Admin123!")
 
-        # Step 4: Submit form
         self.page.click("button:has-text('Save')")
 
-        # Step 5: Wait for error message
+        # ✅ Expect error for duplicate user
         self.page.wait_for_selector("span:has-text('Already exists')", timeout=10000)
 
 
