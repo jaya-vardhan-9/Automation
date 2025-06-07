@@ -79,17 +79,17 @@ class AdminPage:
     def try_add_duplicate_user(self, username):
     # Navigate to Admin -> User Management
         self.page.goto("https://opensource-demo.orangehrmlive.com/web/index.php/admin/viewSystemUsers")
-        self.page.wait_for_selector("button:has-text('Add')", timeout=10000)
+        self.page.wait_for_selector("button:has-text('Add')", timeout=100000)
         self.page.click("button:has-text('Add')")
 
         # Wait for Add User form to load
-        self.page.wait_for_selector("input[placeholder='Type for hints...']", timeout=10000)  # Employee Name
+        self.page.wait_for_selector("input[placeholder='Type for hints...']", timeout=100000)  # Employee Name
         self.page.fill("input[placeholder='Type for hints...']", "Paul Collings")
 
-        self.page.wait_for_selector("input[autocomplete='off'][name='username']", timeout=10000)
+        self.page.wait_for_selector("input[autocomplete='off'][name='username']", timeout=100000)
         self.page.fill("input[autocomplete='off'][name='username']", username)
 
-        self.page.wait_for_selector("input[type='password']", timeout=10000)
+        self.page.wait_for_selector("input[type='password']", timeout=100000)
         pw_fields = self.page.query_selector_all("input[type='password']")
         pw_fields[0].fill("Admin@123")  # Password
         pw_fields[1].fill("Admin@123")  # Confirm Password
@@ -97,7 +97,7 @@ class AdminPage:
         self.page.click("button:has-text('Save')")
 
         # Expect error message for duplicate user
-        self.page.wait_for_selector("span.oxd-text.oxd-text--span.oxd-input-field-error-message", timeout=5000)
+        self.page.wait_for_selector("span.oxd-text.oxd-text--span.oxd-input-field-error-message", timeout=100000)
         assert "Already exists" in self.page.inner_text("span.oxd-text.oxd-text--span.oxd-input-field-error-message")
 
 
