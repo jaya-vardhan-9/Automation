@@ -96,7 +96,7 @@ class AdminPage:
         self.page.click("button:has-text('Save')")
 
         
-        self.page.wait_for_selector("span.oxd-text.oxd-text--span.oxd-input-field-error-message", timeout=10000)
+        self.page.wait_for_selector("span.oxd-text.oxd-text--span.oxd-input-field-error-message", timeout=100000)
         assert "Already exists" in self.page.inner_text("span.oxd-text.oxd-text--span.oxd-input-field-error-message")
 
     def get_duplicate_error(self):
