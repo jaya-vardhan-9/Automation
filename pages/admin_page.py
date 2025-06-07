@@ -40,3 +40,55 @@ class AdminPage:
 
         self.page.click(self.save_button)
         self.page.wait_for_timeout(2000)
+
+    def search_user(self, username):
+        self.page.click("text=Admin")
+        self.page.wait_for_selector("input[name='username']")
+        self.page.fill("input[name='username']", username)
+        self.page.click("button:has-text('Search')")
+        self.page.wait_for_timeout(2000)  # give it time to render results
+
+    def edit_user(self, username, new_role):
+        self.search_user(username)
+        self.page.click(f"text={username}")
+        self.page.wait_for_selector("label:has-text('User Role')")
+        self.page.click("label:has-text('User Role') + div")
+        self.page.click(f"text={new_role}")
+        self.page.click("button:has-text('Save')")
+        self.page.wait_for_timeout(2000)
+
+    def get_user_role_from_table(self, username):
+        self.search_user(username)
+        self.page.wait_for_selector("div.oxd-table-row")
+        role_selector = f"div.oxd-table-cell:has-text('{username}') >> xpath=../../div[3]"
+        return self.page.locator(role_selector).inner_text()
+    
+    def delete_user(self, username):
+        self.search_user(username)
+        self.page.wait_for_selector("div.oxd-table-row")
+        self.page.click("i.oxd-icon.bi-trash")  # Trash icon
+        self.page.wait_for_selector("button:has-text('Yes, Delete')")
+        self.page.click("button:has-text('Yes, Delete')")
+        self.page.wait_for_timeout(2000)
+
+    def is_user_present(self, username):
+        self.search_user(username)
+        self.page.wait_for_timeout(2000)
+        return self.page.locator("div.oxd-table-row").count() > 0
+
+    def try_add_duplicate_user(self, username):
+        self.page.click("text=Admin")
+        self.page.click("button:has-text('Add')")
+        self.page.wait_for_selector("input[placeholder='Type for hints...']")
+        self.page.fill("input[placeholder='Type for hints...']", "Paul")
+        self.page.wait_for_timeout(1000)
+        self.page.keyboard.press("ArrowDown")
+        self.page.keyboard.press("Enter")
+        self.page.fill("input[name='username']", username)
+        self.page.fill("input[name='password']", "Admin123@")
+        self.page.fill("input[name='confirmPassword']", "Admin123@")
+        self.page.click("button:has-text('Save')")
+        self.page.wait_for_timeout(2000)
+
+    def get_duplicate_error(self):
+        return self.page.locator("span.oxd-input-field-error-message").inner_text()
