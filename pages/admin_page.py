@@ -39,14 +39,14 @@ class AdminPage:
         self.page.fill(self.confirm_password_input, password)
 
         self.page.click(self.save_button)
-        self.page.wait_for_timeout(2000)
+        self.page.wait_for_timeout(100000)
 
     def search_user(self, username):
         self.page.click("text=Admin")
         self.page.wait_for_selector("input[name='username']")
         self.page.fill("input[name='username']", username)
         self.page.click("button:has-text('Search')")
-        self.page.wait_for_timeout(2000)  # give it time to render results
+        self.page.wait_for_timeout(100000)  # give it time to render results
 
     def edit_user(self, username, new_role):
         self.search_user(username)
@@ -55,7 +55,7 @@ class AdminPage:
         self.page.click("label:has-text('User Role') + div")
         self.page.click(f"text={new_role}")
         self.page.click("button:has-text('Save')")
-        self.page.wait_for_timeout(2000)
+        self.page.wait_for_timeout(100000)
 
     def get_user_role_from_table(self, username):
         self.search_user(username)
@@ -69,11 +69,11 @@ class AdminPage:
         self.page.click("i.oxd-icon.bi-trash")  # Trash icon
         self.page.wait_for_selector("button:has-text('Yes, Delete')")
         self.page.click("button:has-text('Yes, Delete')")
-        self.page.wait_for_timeout(2000)
+        self.page.wait_for_timeout(100000)
 
     def is_user_present(self, username):
         self.search_user(username)
-        self.page.wait_for_timeout(2000)
+        self.page.wait_for_timeout(100000)
         return self.page.locator("div.oxd-table-row").count() > 0
 
     def try_add_duplicate_user(self, username):
