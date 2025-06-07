@@ -77,15 +77,20 @@ class AdminPage:
         return self.page.locator("div.oxd-table-row").count() > 0
 
     def try_add_duplicate_user(self, username):
-        # ✅ Step 1: Navigate to Admin module
-        self.page.click("a[href='/web/index.php/admin/viewSystemUsers']")
-        self.page.wait_for_selector("h6:has-text('System Users')", timeout=30000)
+        # ✅ Wait for dashboard to fully load (very important on EC2/headless)
+        self.page.wait_for_selector("h6:has-text('Dashboard')", timeout=10000)
 
-        # ✅ Step 2: Click Add
+        # ✅ Click on the "Admin" menu from sidebar
+        self.page.click("span:has-text('Admin')")
+
+        # ✅ Wait for Admin > User Management page to load
+        self.page.wait_for_selector("h6:has-text('System Users')", timeout=10000)
+
+        # ✅ Click the "Add" button
         self.page.click("button:has-text('Add')")
-        self.page.wait_for_selector("h6:has-text('Add User')", timeout=30000)
+        self.page.wait_for_selector("h6:has-text('Add User')", timeout=10000)
 
-        # ✅ Step 3: Fill the form
+        # ✅ Fill out the form
         self.page.fill("input[placeholder='Type for hints...']", "Paul Collings")
         self.page.wait_for_timeout(1000)
         self.page.keyboard.press("ArrowDown")
@@ -98,9 +103,11 @@ class AdminPage:
         self.page.fill("input[type='password']", "Admin123!")
         self.page.fill("input[type='password'] >> nth=1", "Admin123!")
 
-        # ✅ Step 4: Save and check error
+        # ✅ Submit form
         self.page.click("button:has-text('Save')")
-        self.page.wait_for_selector("span:has-text('Already exists')", timeout=30000)
+
+        # ✅ Wait for duplicate error
+        self.page.wait_for_selector("span:has-text('Already exists')", timeout=10000)
 
 
 
