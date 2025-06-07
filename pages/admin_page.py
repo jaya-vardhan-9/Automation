@@ -39,7 +39,7 @@ class AdminPage:
         self.page.fill(self.confirm_password_input, password)
 
         self.page.click(self.save_button)
-        self.page.wait_for_timeout(100000)
+        self.page.wait_for_timeout(300000)
 
     def search_user(self, username):
         self.page.click("text=Admin")
@@ -77,14 +77,15 @@ class AdminPage:
         return self.page.locator("div.oxd-table-row").count() > 0
 
     def try_add_duplicate_user(self, username):
-        # ✅ Wait for Add button instead of 'System Users' title
-        self.page.wait_for_selector("button:has-text('Add')", timeout=10000)
+        # ✅ Step 1: Navigate to Admin module
+        self.page.click("a[href='/web/index.php/admin/viewSystemUsers']")
+        self.page.wait_for_selector("h6:has-text('System Users')", timeout=30000)
+
+        # ✅ Step 2: Click Add
         self.page.click("button:has-text('Add')")
+        self.page.wait_for_selector("h6:has-text('Add User')", timeout=30000)
 
-        # ✅ Wait for 'Add User' title to confirm navigation
-        self.page.wait_for_selector("h6:has-text('Add User')", timeout=10000)
-
-        # Fill out the form
+        # ✅ Step 3: Fill the form
         self.page.fill("input[placeholder='Type for hints...']", "Paul Collings")
         self.page.wait_for_timeout(1000)
         self.page.keyboard.press("ArrowDown")
@@ -97,10 +98,10 @@ class AdminPage:
         self.page.fill("input[type='password']", "Admin123!")
         self.page.fill("input[type='password'] >> nth=1", "Admin123!")
 
+        # ✅ Step 4: Save and check error
         self.page.click("button:has-text('Save')")
+        self.page.wait_for_selector("span:has-text('Already exists')", timeout=30000)
 
-        # ✅ Expect error for duplicate user
-        self.page.wait_for_selector("span:has-text('Already exists')", timeout=10000)
 
 
 
