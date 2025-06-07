@@ -77,27 +77,29 @@ class AdminPage:
         return self.page.locator("div.oxd-table-row").count() > 0
 
     def try_add_duplicate_user(self, username):
-        self.page.click("a[href*='admin/viewAdminModule']")  # Admin tab
-        self.page.wait_for_selector("button:has-text('Add')")
+    # Navigate to Admin -> User Management
+        self.page.goto("https://opensource-demo.orangehrmlive.com/web/index.php/admin/viewSystemUsers")
+        self.page.wait_for_selector("button:has-text('Add')", timeout=10000)
         self.page.click("button:has-text('Add')")
 
-        self.page.wait_for_selector("input[name='systemUser[employeeName][empName]']")
-        self.page.fill("input[name='systemUser[employeeName][empName]']", "Paul Collings")
+        # Wait for Add User form to load
+        self.page.wait_for_selector("input[placeholder='Type for hints...']", timeout=10000)  # Employee Name
+        self.page.fill("input[placeholder='Type for hints...']", "Paul Collings")
 
-        self.page.wait_for_selector("input[name='systemUser[username]']")
-        self.page.fill("input[name='systemUser[username]']", username)
+        self.page.wait_for_selector("input[autocomplete='off'][name='username']", timeout=10000)
+        self.page.fill("input[autocomplete='off'][name='username']", username)
 
-        self.page.wait_for_selector("input[name='systemUser[password]']")
-        self.page.fill("input[name='systemUser[password]']", "Admin@123")
-
-        self.page.wait_for_selector("input[name='systemUser[confirmPassword]']")
-        self.page.fill("input[name='systemUser[confirmPassword]']", "Admin@123")
+        self.page.wait_for_selector("input[type='password']", timeout=10000)
+        pw_fields = self.page.query_selector_all("input[type='password']")
+        pw_fields[0].fill("Admin@123")  # Password
+        pw_fields[1].fill("Admin@123")  # Confirm Password
 
         self.page.click("button:has-text('Save')")
 
-        
-        self.page.wait_for_selector("span.oxd-text.oxd-text--span.oxd-input-field-error-message", timeout=100000)
+        # Expect error message for duplicate user
+        self.page.wait_for_selector("span.oxd-text.oxd-text--span.oxd-input-field-error-message", timeout=5000)
         assert "Already exists" in self.page.inner_text("span.oxd-text.oxd-text--span.oxd-input-field-error-message")
+
 
     def get_duplicate_error(self):
         return self.page.locator("span.oxd-input-field-error-message").inner_text()
